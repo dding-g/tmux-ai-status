@@ -20,15 +20,33 @@
 
 ## 설치
 
-### TPM (권장)
+### 사람용
 
-`~/.tmux.conf`에 추가:
+`~/.tmux.conf`에 복사 붙여넣기:
 
 ```tmux
 set -g @plugin 'dding-g/tmux-ai-status'
 ```
 
-`prefix + I`로 설치.
+`prefix + I`로 설치. 끝.
+
+### AI 에이전트용
+
+아래 명령으로 전체 README를 읽고 설치를 진행하세요:
+
+```bash
+curl -s https://raw.githubusercontent.com/dding-g/tmux-ai-status/main/README.ko.md
+```
+
+또는 직접 클론하여 실행:
+
+```bash
+git clone https://github.com/dding-g/tmux-ai-status ~/.tmux/plugins/tmux-ai-status && \
+echo 'run-shell ~/.tmux/plugins/tmux-ai-status/ai-status.tmux' >> ~/.tmux.conf && \
+tmux source-file ~/.tmux.conf
+```
+
+---
 
 ### 수동 설치
 

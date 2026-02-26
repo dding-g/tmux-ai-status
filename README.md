@@ -20,15 +20,33 @@ Tmux plugin that detects AI coding tools (Claude Code, OpenCode, Aider, Copilot)
 
 ## Installation
 
-### With [TPM](https://github.com/tmux-plugins/tpm) (recommended)
+### For Humans
 
-Add to your `~/.tmux.conf`:
+Copy and paste this into your `~/.tmux.conf`:
 
 ```tmux
 set -g @plugin 'dding-g/tmux-ai-status'
 ```
 
-Then press `prefix + I` to install.
+Then press `prefix + I` to install. Done.
+
+### For LLM Agents
+
+Install and configure `tmux-ai-status` by fetching the full README:
+
+```bash
+curl -s https://raw.githubusercontent.com/dding-g/tmux-ai-status/main/README.md
+```
+
+Or clone and run directly:
+
+```bash
+git clone https://github.com/dding-g/tmux-ai-status ~/.tmux/plugins/tmux-ai-status && \
+echo 'run-shell ~/.tmux/plugins/tmux-ai-status/ai-status.tmux' >> ~/.tmux.conf && \
+tmux source-file ~/.tmux.conf
+```
+
+---
 
 ### Manual
 
