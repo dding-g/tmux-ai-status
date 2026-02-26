@@ -32,19 +32,65 @@ set -g @plugin 'dding-g/tmux-ai-status'
 
 ### AI 에이전트용
 
-아래 명령으로 전체 README를 읽고 설치를 진행하세요:
+아래 프롬프트를 AI 에이전트(Claude Code, Cursor 등)에 복사 붙여넣기하세요:
 
-```bash
-curl -s https://raw.githubusercontent.com/dding-g/tmux-ai-status/main/README.ko.md
+<details>
+<summary>프롬프트 전문 보기</summary>
+
+```
+tmux-ai-status 플러그인을 설치해줘. 이 플러그인은 tmux 활성 pane에서 실행 중인 AI 코딩 도구(Claude Code, OpenCode, Aider, Copilot)를 감지하여 상태바에 표시하는 TPM 호환 플러그인이야.
+
+레포지토리: https://github.com/dding-g/tmux-ai-status
+
+## 설치 순서
+
+1. 플러그인 클론:
+   git clone https://github.com/dding-g/tmux-ai-status ~/.tmux/plugins/tmux-ai-status
+
+2. tmux 설정 파일(~/.tmux.conf 또는 ~/.config/tmux/tmux.conf)에 추가:
+   - TPM 사용 시: set -g @plugin 'dding-g/tmux-ai-status'
+   - 수동 설치: run-shell ~/.tmux/plugins/tmux-ai-status/ai-status.tmux
+
+3. Nix home-manager 사용 시 programs.tmux.plugins에 추가:
+   {
+     plugin = pkgs.tmuxPlugins.mkTmuxPlugin {
+       pluginName = "ai-status";
+       version = "0.1.0";
+       src = pkgs.fetchFromGitHub {
+         owner = "dding-g";
+         repo = "tmux-ai-status";
+         rev = "main";
+         hash = "";
+       };
+     };
+   }
+
+4. 리로드: tmux source-file ~/.tmux.conf
+
+## 설정 옵션 (모두 선택사항)
+
+set -g @ai-status-tools "claude,opencode,aider,copilot"  # 감지할 도구
+set -g @ai-status-position "right"                        # right 또는 left
+set -g @ai-status-interval 5                              # 갱신 주기 (초)
+set -g @ai-status-busy-icon "🤖"                          # AI 작업 중
+set -g @ai-status-idle-icon "💤"                          # 입력 대기
+set -g @ai-status-waiting-icon "⏳"                       # 권한 확인 대기
+set -g @ai-status-error-icon "❗"                         # 에러 발생
+set -g @ai-status-capture-lines "15"                      # 스캔할 터미널 줄 수
+set -g @ai-status-colors "claude:colour135,opencode:colour82,aider:colour220,copilot:colour75"
+
+## 동작 원리
+
+이 플러그인은 활성 pane의 프로세스 트리를 스캔(ps + awk BFS)한 후, tmux capture-pane으로 터미널 마지막 N줄을 읽어 4가지 상태를 판별해:
+- busy: 스피너 문자, "Thinking", "Tool:", "Reading", "Writing"
+- waiting: [Y/n], Allow, Deny, Continue?
+- error: ✗, error:, fatal, panic:
+- idle: 패턴 매칭 없음 (기본값)
+
+사용자의 tmux 환경(TPM / 수동 / Nix)을 감지하여 적절한 방법으로 설치해줘.
 ```
 
-또는 직접 클론하여 실행:
-
-```bash
-git clone https://github.com/dding-g/tmux-ai-status ~/.tmux/plugins/tmux-ai-status && \
-echo 'run-shell ~/.tmux/plugins/tmux-ai-status/ai-status.tmux' >> ~/.tmux.conf && \
-tmux source-file ~/.tmux.conf
-```
+</details>
 
 ---
 

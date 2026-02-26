@@ -32,19 +32,65 @@ Then press `prefix + I` to install. Done.
 
 ### For LLM Agents
 
-Install and configure `tmux-ai-status` by fetching the full README:
+Copy the prompt below and paste it into your AI agent (Claude Code, Cursor, etc.):
 
-```bash
-curl -s https://raw.githubusercontent.com/dding-g/tmux-ai-status/main/README.md
+<details>
+<summary>Click to expand full prompt</summary>
+
+```
+Install the tmux-ai-status plugin. This is a TPM-compatible tmux plugin that detects AI coding tools (Claude Code, OpenCode, Aider, Copilot) running in the active pane and shows their status in the tmux status bar.
+
+Repository: https://github.com/dding-g/tmux-ai-status
+
+## Installation Steps
+
+1. Clone the plugin:
+   git clone https://github.com/dding-g/tmux-ai-status ~/.tmux/plugins/tmux-ai-status
+
+2. Add to tmux config (~/.tmux.conf or ~/.config/tmux/tmux.conf):
+   - If using TPM: set -g @plugin 'dding-g/tmux-ai-status'
+   - If manual: run-shell ~/.tmux/plugins/tmux-ai-status/ai-status.tmux
+
+3. If using Nix home-manager, add to programs.tmux.plugins:
+   {
+     plugin = pkgs.tmuxPlugins.mkTmuxPlugin {
+       pluginName = "ai-status";
+       version = "0.1.0";
+       src = pkgs.fetchFromGitHub {
+         owner = "dding-g";
+         repo = "tmux-ai-status";
+         rev = "main";
+         hash = "";
+       };
+     };
+   }
+
+4. Reload: tmux source-file ~/.tmux.conf
+
+## Available Options (all optional)
+
+set -g @ai-status-tools "claude,opencode,aider,copilot"  # tools to detect
+set -g @ai-status-position "right"                        # right or left
+set -g @ai-status-interval 5                              # refresh seconds
+set -g @ai-status-busy-icon "🤖"                          # AI working
+set -g @ai-status-idle-icon "💤"                          # waiting for input
+set -g @ai-status-waiting-icon "⏳"                       # needs permission
+set -g @ai-status-error-icon "❗"                         # error state
+set -g @ai-status-capture-lines "15"                      # terminal lines to scan
+set -g @ai-status-colors "claude:colour135,opencode:colour82,aider:colour220,copilot:colour75"
+
+## How It Works
+
+The plugin scans the active pane's process tree (ps + awk BFS), then reads the last N lines of terminal content via tmux capture-pane to determine 4 states:
+- busy: spinner characters, "Thinking", "Tool:", "Reading", "Writing"
+- waiting: [Y/n], Allow, Deny, Continue?
+- error: ✗, error:, fatal, panic:
+- idle: no pattern matched (default)
+
+Detect the user's tmux setup (TPM vs manual vs Nix) and apply the appropriate method.
 ```
 
-Or clone and run directly:
-
-```bash
-git clone https://github.com/dding-g/tmux-ai-status ~/.tmux/plugins/tmux-ai-status && \
-echo 'run-shell ~/.tmux/plugins/tmux-ai-status/ai-status.tmux' >> ~/.tmux.conf && \
-tmux source-file ~/.tmux.conf
-```
+</details>
 
 ---
 
