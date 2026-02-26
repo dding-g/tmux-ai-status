@@ -55,6 +55,7 @@ tmux-ai-status 플러그인을 설치해줘. 이 플러그인은 tmux 활성 pan
    {
      plugin = pkgs.tmuxPlugins.mkTmuxPlugin {
        pluginName = "ai-status";
+       rtpFilePath = "ai-status.tmux";
        version = "0.1.0";
        src = pkgs.fetchFromGitHub {
          owner = "dding-g";
@@ -122,6 +123,7 @@ tmux 모듈의 `programs.tmux.plugins`에 추가:
 {
   plugin = pkgs.tmuxPlugins.mkTmuxPlugin {
     pluginName = "ai-status";
+    rtpFilePath = "ai-status.tmux";
     version = "0.1.0";
     src = pkgs.fetchFromGitHub {
       owner = "dding-g";
@@ -135,6 +137,8 @@ tmux 모듈의 `programs.tmux.plugins`에 추가:
   '';
 }
 ```
+
+> **중요:** `rtpFilePath = "ai-status.tmux"`가 필수입니다. 이 설정이 없으면 `mkTmuxPlugin`이 하이픈을 언더스코어로 변환하여 존재하지 않는 `ai_status.tmux`를 찾습니다.
 
 #### 방법 B: extraConfig에서 직접 로드
 
@@ -190,6 +194,39 @@ set -g status-right '#{ai_status} | %H:%M'
 ```
 
 플레이스홀더가 없으면 자동으로 상태바 앞에 prepend됩니다.
+
+### 윈도우별 아이콘 모드
+
+기본 `ai-status.sh`는 **활성 pane**의 상태를 `status-right`/`status-left`에 표시합니다. 여러 윈도우에서 동시에 AI 도구를 실행하면 각 탭에 개별 아이콘을 표시할 수 있는 `ai-icon.sh`를 사용하세요.
+
+`ai-icon.sh`는 경량 독립 스크립트입니다:
+- `pane_pid`와 `pane_id`를 CLI 인자로 수신 (tmux option 읽기 없음)
+- 색상이나 도구명 없이 아이콘만 출력 (탭 라벨에 적합)
+- `ai-status.sh`와 동일한 감지 로직 사용
+
+#### catppuccin 연동
+
+```tmux
+set -g @catppuccin_window_default_text " #W#($PLUGIN_DIR/scripts/ai-icon.sh #{pane_pid} #{pane_id})"
+set -g @catppuccin_window_current_text " #W#($PLUGIN_DIR/scripts/ai-icon.sh #{pane_pid} #{pane_id})"
+```
+
+> `$PLUGIN_DIR`을 실제 플러그인 경로로 교체하세요. 예: `~/.tmux/plugins/tmux-ai-status`
+
+#### 일반 tmux
+
+```tmux
+set -g window-status-format         '#I:#W#(~/.tmux/plugins/tmux-ai-status/scripts/ai-icon.sh #{pane_pid} #{pane_id})'
+set -g window-status-current-format '#I:#W#(~/.tmux/plugins/tmux-ai-status/scripts/ai-icon.sh #{pane_pid} #{pane_id})'
+```
+
+| 상태 | 아이콘 |
+|------|--------|
+| busy | 🤖 |
+| waiting | ⏳ |
+| error | ❗ |
+| idle | 💤 |
+| 미실행 | *(빈 문자열)* |
 
 ## 설정
 

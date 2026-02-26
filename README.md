@@ -55,6 +55,7 @@ Repository: https://github.com/dding-g/tmux-ai-status
    {
      plugin = pkgs.tmuxPlugins.mkTmuxPlugin {
        pluginName = "ai-status";
+       rtpFilePath = "ai-status.tmux";
        version = "0.1.0";
        src = pkgs.fetchFromGitHub {
          owner = "dding-g";
@@ -122,6 +123,7 @@ Add to your `programs.tmux.plugins` in your tmux module:
 {
   plugin = pkgs.tmuxPlugins.mkTmuxPlugin {
     pluginName = "ai-status";
+    rtpFilePath = "ai-status.tmux";
     version = "0.1.0";
     src = pkgs.fetchFromGitHub {
       owner = "dding-g";
@@ -135,6 +137,8 @@ Add to your `programs.tmux.plugins` in your tmux module:
   '';
 }
 ```
+
+> **Important:** `rtpFilePath = "ai-status.tmux"` is required. Without it, `mkTmuxPlugin` converts hyphens to underscores and looks for `ai_status.tmux`, which doesn't exist.
 
 #### Option B: In extraConfig
 
@@ -190,6 +194,39 @@ set -g status-right '#{ai_status} | %H:%M'
 ```
 
 The plugin replaces `#{ai_status}` with the detection output. If no placeholder is found, the plugin prepends to the status bar automatically.
+
+### Per-window icon mode
+
+The main `ai-status.sh` shows status for the **active pane** in `status-right`/`status-left`. If you run AI tools in multiple windows simultaneously, you can use `ai-icon.sh` to display a per-window icon in each tab.
+
+`ai-icon.sh` is a lightweight, standalone script:
+- Receives `pane_pid` and `pane_id` as CLI arguments (no tmux option reads)
+- Outputs a single icon with no color or tool name (suitable for tab labels)
+- Uses the same detection logic as `ai-status.sh`
+
+#### With catppuccin
+
+```tmux
+set -g @catppuccin_window_default_text " #W#($PLUGIN_DIR/scripts/ai-icon.sh #{pane_pid} #{pane_id})"
+set -g @catppuccin_window_current_text " #W#($PLUGIN_DIR/scripts/ai-icon.sh #{pane_pid} #{pane_id})"
+```
+
+> Replace `$PLUGIN_DIR` with your actual plugin path, e.g. `~/.tmux/plugins/tmux-ai-status`.
+
+#### With plain tmux
+
+```tmux
+set -g window-status-format         '#I:#W#(~/.tmux/plugins/tmux-ai-status/scripts/ai-icon.sh #{pane_pid} #{pane_id})'
+set -g window-status-current-format '#I:#W#(~/.tmux/plugins/tmux-ai-status/scripts/ai-icon.sh #{pane_pid} #{pane_id})'
+```
+
+| State | Icon |
+|-------|------|
+| busy | 🤖 |
+| waiting | ⏳ |
+| error | ❗ |
+| idle | 💤 |
+| not running | *(empty)* |
 
 ## Configuration
 
