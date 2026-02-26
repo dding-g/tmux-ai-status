@@ -1,5 +1,7 @@
 # tmux-ai-status
 
+**English** | [한국어](README.ko.md)
+
 Tmux plugin that detects AI coding tools (Claude Code, OpenCode, Aider, Copilot) running in the active pane and displays their status in the tmux status bar.
 
 ## Features
