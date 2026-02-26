@@ -201,8 +201,9 @@ set -g status-right '#{ai_status} | %H:%M'
 
 `ai-icon.sh`는 경량 독립 스크립트입니다:
 - `pane_pid`와 `pane_id`를 CLI 인자로 수신 (tmux option 읽기 없음)
+- 터미널 내용 스크래핑 대신 **프로세스 상태**(CPU 사용량)로 활동 감지
 - 색상이나 도구명 없이 아이콘만 출력 (탭 라벨에 적합)
-- `ai-status.sh`와 동일한 감지 로직 사용
+- 두 가지 상태: **busy** (AI 작업 중) vs **idle** (입력 대기)
 
 #### catppuccin 연동
 
@@ -223,8 +224,6 @@ set -g window-status-current-format '#I:#W#(~/.tmux/plugins/tmux-ai-status/scrip
 | 상태 | 아이콘 |
 |------|--------|
 | busy | 🤖 |
-| waiting | ⏳ |
-| error | ❗ |
 | idle | 💤 |
 | 미실행 | *(빈 문자열)* |
 

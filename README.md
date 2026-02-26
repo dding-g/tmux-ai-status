@@ -201,8 +201,9 @@ The main `ai-status.sh` shows status for the **active pane** in `status-right`/`
 
 `ai-icon.sh` is a lightweight, standalone script:
 - Receives `pane_pid` and `pane_id` as CLI arguments (no tmux option reads)
+- Detects activity via **process state** (CPU usage), not terminal content scraping
 - Outputs a single icon with no color or tool name (suitable for tab labels)
-- Uses the same detection logic as `ai-status.sh`
+- Two states: **busy** (AI is actively working) vs **idle** (waiting for input)
 
 #### With catppuccin
 
@@ -223,8 +224,6 @@ set -g window-status-current-format '#I:#W#(~/.tmux/plugins/tmux-ai-status/scrip
 | State | Icon |
 |-------|------|
 | busy | 🤖 |
-| waiting | ⏳ |
-| error | ❗ |
 | idle | 💤 |
 | not running | *(empty)* |
 
