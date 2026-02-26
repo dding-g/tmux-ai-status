@@ -46,6 +46,63 @@ Reload tmux:
 tmux source-file ~/.tmux.conf
 ```
 
+### Nix (home-manager)
+
+#### Option A: As a plugin
+
+Add to your `programs.tmux.plugins` in your tmux module:
+
+```nix
+{
+  plugin = pkgs.tmuxPlugins.mkTmuxPlugin {
+    pluginName = "ai-status";
+    version = "0.1.0";
+    src = pkgs.fetchFromGitHub {
+      owner = "dding-g";
+      repo = "tmux-ai-status";
+      rev = "main";
+      hash = "";  # first build will show the correct hash
+    };
+  };
+  extraConfig = ''
+    set -g @ai-status-tools "claude,opencode,aider,copilot"
+  '';
+}
+```
+
+#### Option B: In extraConfig
+
+Add to `programs.tmux.extraConfig`:
+
+```nix
+extraConfig = ''
+  # ... your existing config ...
+
+  # ai-status plugin
+  run-shell ${pkgs.fetchFromGitHub {
+    owner = "dding-g";
+    repo = "tmux-ai-status";
+    rev = "main";
+    hash = "";  # first build will show the correct hash
+  }}/ai-status.tmux
+'';
+```
+
+> **Note:** On first build, Nix will error with the correct `hash` value. Replace the empty string with that value.
+
+Then rebuild:
+
+```sh
+# NixOS
+sudo nixos-rebuild switch
+
+# nix-darwin
+darwin-rebuild switch --flake .
+
+# home-manager standalone
+home-manager switch
+```
+
 ## Usage
 
 Once installed, the plugin automatically prepends AI tool status to your `status-right`:
